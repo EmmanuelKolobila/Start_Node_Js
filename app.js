@@ -1,40 +1,40 @@
 const express = require('express')
 const morgan = require('morgan')
+const mongoose = require('mongoose')
+const blogRoutes = require('./routes/blogRoutes')
 
 // express app
 const app = express()
 
+// connect to mongoDB
+const dbURI = 'mongodb+srv://kolobila:1111kwaku@nodetuta.migci.mongodb.net/'
+mongoose.connect(dbURI)
+.then((result) => app.listen(8080, () => {
+    console.log('Server is listening on http://localhost:3000'); // Log statement added
+}))
+.catch((err) => console.log('err'))
+
 // register view engine
 app.set('view engine', 'ejs')
 
-// listen for request
-app.listen(3000, () => {
-    console.log('Server is listening on http://localhost:3000'); // Log statement added
-});
-
-// middleware  and static files
+// middleware and static files
+app.use(express.urlencoded({ extended: true })) // A middleware that handles the post request
 app.use(express.static('public'))
 app.use(morgan('dev'))
 
-
-
+// routes
 app.get('/', (req, res) => {
-    const blogs = [
-        {title: 'Blog 1', snippet: 'this is kolo blog one for the word'},
-        {title: 'Blog 2', snippet: 'another blog to work on by kolo'},
-        {title: 'blog 3', snippet: 'this is blog three that can be work on'}
-    ]
-    res.render('index', {title: 'Home page', blogs})
+    res.redirect('/blogs')
 })
 
 app.get('/about', (req, res) => {
-    res.render('about', {title: 'About page'})
+    res.render('about', { title: 'About page' })
 })
 
-app.get('/blogs/create', (req, res) => {
-    res.render('create', {title: 'create new blod'})
-})
+// blog route
+app.use( blogRoutes);
 
+// 404 page
 app.use((req, res) => {
-    res.status(404).render('404', {title: '404 page'}); // Uncommented fallback route for 404 errors
+    res.status(404).render('404', { title: '404 page' }); // Fallback route for 404 errors
 })
