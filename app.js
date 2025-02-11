@@ -32,7 +32,7 @@ app.get('/about', (req, res) => {
 })
 
 // blog route
-app.use( blogRoutes);
+app.use('/blogs', blogRoutes);
 
 // 404 page
 app.use((req, res) => {
